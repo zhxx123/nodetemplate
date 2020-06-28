@@ -1,12 +1,18 @@
+<!--
+ * @Author: zhxx
+ * @Date: 2020-06-28 10:35:34
+ * @LastEditors: zhxx
+ * @LastEditTime: 2020-06-28 14:16:02
+-->
 <template>
   <div class="sidebar-logo-container" :class="{'collapse':collapse}">
     <transition name="sidebarLogoFade">
       <router-link v-if="collapse" key="collapse" class="sidebar-logo-link" to="/">
-        <img v-if="logo" src="@/assets/massgrid.png" class="sidebar-logo" alt="MassGrid">
+        <img v-if="logo" src="@/assets/logo.png" class="sidebar-logo" alt="GoTemplate">
         <h1 v-else class="sidebar-title">{{ title }} </h1>
       </router-link>
       <router-link v-else key="expand" class="sidebar-logo-link" to="/">
-        <!-- <img v-if="logo" src="@/assets/massgrid.png" class="sidebar-logo"> -->
+        <!-- <img v-if="logo" src="@/assets/logo.png" class="sidebar-logo"> -->
         <h1 class="sidebar-title">{{ title }} </h1>
       </router-link>
     </transition>
@@ -24,8 +30,8 @@ export default {
   },
   data() {
     return {
-      title: 'MassGrid 控制台',
-      logo: '@/assets/massgrid.png'
+      title: 'GoTemplate 控制台',
+      logo: '@/assets/logo.png'
     }
   }
 }

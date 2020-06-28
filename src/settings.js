@@ -1,5 +1,11 @@
+/*
+ * @Author: zhxx
+ * @Date: 2020-06-28 10:35:34
+ * @LastEditors: zhxx
+ * @LastEditTime: 2020-06-28 14:16:17
+ */
 module.exports = {
-  title: 'MassGrid 控制台',
+  title: 'GoTemplate 控制台',
 
   /**
    * @type {boolean} true | false

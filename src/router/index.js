@@ -107,32 +107,32 @@ export const constantRoutes = [
  * the routes that need to be dynamically loaded based on user roles
  */
 export const asyncRoutes = [
-  {
-    path: '/machine',
-    component: Layout,
-    redirect: '/machine/list',
-    name: 'Machines',
-    meta: {
-      title: '机器监控',
-      icon: 'example',
-      roles: [1, 4, 5] // you can set roles in root nav
-    },
-    children: [
-      {
-        path: 'list',
-        component: () => import('@/views/dashboard/index'),
-        name: 'MachineList',
-        meta: { title: '服务器监控', icon: 'edit' }
-      },
-      {
-        path: 'detail/:id',
-        component: () => import('@/views/dashboard/admin/detail'),
-        name: 'MachineDetail',
-        meta: { title: '服务器详情', icon: 'edit' },
-        hidden: true
-      }
-    ]
-  },
+//   {
+//     path: '/machine',
+//     component: Layout,
+//     redirect: '/machine/list',
+//     name: 'Machines',
+//     meta: {
+//       title: '机器监控',
+//       icon: 'example',
+//       roles: [1, 4, 5] // you can set roles in root nav
+//     },
+//     children: [
+//       {
+//         path: 'list',
+//         component: () => import('@/views/dashboard/index'),
+//         name: 'MachineList',
+//         meta: { title: '服务器监控', icon: 'edit' }
+//       },
+//       {
+//         path: 'detail/:id',
+//         component: () => import('@/views/dashboard/admin/detail'),
+//         name: 'MachineDetail',
+//         meta: { title: '服务器详情', icon: 'edit' },
+//         hidden: true
+//       }
+//     ]
+//   },
   {
     path: '/user',
     component: Layout,
@@ -159,15 +159,6 @@ export const asyncRoutes = [
         name: 'LoginRecord',
         meta: {
           title: '登录记录'
-        }
-      },
-      {
-        path: 'message',
-        component: () => import('@/views/user/message'),
-        name: 'Message',
-        meta: {
-          title: '消息记录'
-          // if do not set roles, means: this page does not require permission
         }
       },
       {

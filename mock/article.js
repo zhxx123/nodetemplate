@@ -19,7 +19,7 @@ for (let i = 0; i < count; i++) {
     title: '@string(5, 10)',
     summary: '@string(5, 10)',
     content: baseContent,
-    announcer: 'MassGrid',
+    announcer: 'GoTemplate',
     published_at: '@datetime'
   }))
 }
@@ -37,7 +37,7 @@ for (let i = 0; i < count; i++) {
     title: '@string(5, 10)',
     summary: '@string(5, 10)',
     content: baseContent,
-    announcer: 'MassGrid',
+    announcer: 'GoTemplate',
     published_at: '@datetime'
   }))
 }

@@ -3,7 +3,7 @@
     <el-form ref="loginForm" :model="loginForm" :rules="loginRules" class="login-form" autocomplete="on" label-position="left">
 
       <div class="title-container">
-        <h3 class="title">MassGrid 后台管理登录</h3>
+        <h3 class="title">GoTemplate 后台管理登录</h3>
       </div>
 
       <el-form-item prop="signinInput">
@@ -49,24 +49,18 @@
       </el-form-item>
       <el-button :loading="loading" type="primary" style="width:100%;margin-bottom:30px;" @click.native.prevent="handleLogin">登录</el-button>
     </el-form>
-
-    <el-dialog title="Or connect with" :visible.sync="showDialog">
-      Can not be simulated on local, so please combine you own business simulation! ! !
-      <br>
-      <social-sign />
-    </el-dialog>
   </div>
 </template>
 
 <script>
 import { validEmail } from '@/utils/validate'
-import SocialSign from './components/SocialSignin'
+// import SocialSign from './components/SocialSignin'
 import { getUUID } from '@/utils/tool'
 import { getCaptchaCode } from '@/api/userAction'
 
 export default {
   name: 'Login',
-  components: { SocialSign },
+  components: { },
   data() {
     const validateEmail = (rule, value, callback) => {
       console.log(value, validEmail(value))
@@ -209,24 +203,6 @@ export default {
         return acc
       }, {})
     }
-    // afterQRScan() {
-    //   if (e.key === 'x-admin-oauth-code') {
-    //     const code = getQueryObject(e.newValue)
-    //     const codeMap = {
-    //       wechat: 'code',
-    //       tencent: 'code'
-    //     }
-    //     const type = codeMap[this.auth_type]
-    //     const codeName = code[type]
-    //     if (codeName) {
-    //       this.$store.dispatch('LoginByThirdparty', codeName).then(() => {
-    //         this.$router.push({ path: this.redirect || '/' })
-    //       })
-    //     } else {
-    //       alert('第三方登录失败')
-    //     }
-    //   }
-    // }
   }
 }
 </script>
@@ -276,17 +252,21 @@ $cursor: #fff;
     color: #454545;
   }
 }
+
 </style>
 
 <style lang="scss" scoped>
-$bg:#2d3a4b;
-$dark_gray:#889aa4;
+$bg:#b5bcc2;
+$dark_gray:#b7cdda;
 $light_gray:#eee;
 
 .login-container {
   min-height: 100%;
   width: 100%;
   background-color: $bg;
+//   background-image: url('../../assets/bg.jpg');
+  background-size: cover;
+  background-position: center;
   overflow: hidden;
 
   .login-form {

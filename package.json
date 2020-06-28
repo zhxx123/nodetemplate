@@ -38,10 +38,10 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/massgrid/massgrid.git"
+    "url": "git+https://github.com/zhxx123/gotemplate.git"
   },
   "bugs": {
-    "url": "https://github.com/massgrid/massgrid/issue"
+    "url": "https://github.com/zhxx123/gotemplate/issue"
   },
   "dependencies": {
     "axios": "0.18.1",
