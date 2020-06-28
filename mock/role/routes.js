@@ -177,46 +177,6 @@ export const asyncRoutes = [
     ]
   },
   {
-    path: '/permission',
-    component: 'layout/Layout',
-    redirect: '/permission/admin',
-    alwaysShow: true,
-    meta: {
-      title: 'Permission',
-      icon: 'lock',
-      roles: ['admin', 'editor']
-    },
-    children: [
-      {
-        path: 'admin',
-        component: 'views/permission/admin',
-        name: 'AdminList',
-        meta: {
-          title: 'Page Permission',
-          roles: ['admin']
-        }
-      },
-      {
-        path: 'directive',
-        component: 'views/permission/directive',
-        name: 'DirectivePermission',
-        meta: {
-          title: 'Directive Permission'
-        }
-      },
-      {
-        path: 'role',
-        component: 'views/permission/role',
-        name: 'RolePermission',
-        meta: {
-          title: 'Role Permission',
-          roles: ['admin']
-        }
-      }
-    ]
-  },
-
-  {
     path: '/components',
     component: 'layout/Layout',
     redirect: 'noRedirect',
