@@ -1,3 +1,9 @@
+/*
+ * @Author: zhxx
+ * @Date: 2020-07-10 10:43:46
+ * @LastEditors: zhxx
+ * @LastEditTime: 2020-07-10 12:40:58
+ */
 import axios from 'axios'
 import router from '@/router'
 import Vue from 'vue'
@@ -45,38 +51,18 @@ service.interceptors.response.use(
    */
   response => {
     const res = response.data
-    // if the custom code is not 20000, it is judged as an error.
-    if (res.status !== 2000) {
-      // 2002: 账户已经被锁定;
-      if (res.status === 2002) {
-        Vue.prototype.$message({
-          message: res.msg || 'Error',
-          showClose: true,
-          type: 'error',
-          duration: 5 * 1000
-        })
-        store.dispatch('user/resetToken')
-        return Promise.reject(new Error(res.msg || 'Error'))
-      }
-      // 2003: token 已经过期
-      // if (res.status === 2002) {
-      //   MessageBox.confirm('你已经退出登录, 你可以取消留在当前页面，或者重新登录', '确认登出', {
-      //     confirmButtonText: '重新登录',
-      //     cancelButtonText: '取消',
-      //     type: 'warning'
-      //   }).then(() => {
-      //     store.dispatch('user/resetToken')
-      //     router.replace({
-      //       path: '/login',
-      //       query: { redirect: router.currentRoute.fullPath }
-      //     })
-      //   })
-      //   return Promise.reject(new Error(res.msg || 'Error'))
-      // }
-      return res
-    } else {
-      return res
+    // 2002: 登录已经过期;
+    if (res.status === 2002) {
+      Vue.prototype.$message({
+        message: res.msg || 'Error',
+        showClose: true,
+        type: 'error',
+        duration: 5 * 1000
+      })
+      store.dispatch('user/resetToken')
+      return Promise.reject(new Error(res.msg || 'Error'))
     }
+    return res
   },
   error => {
     // console.log('error' + error) // for debug

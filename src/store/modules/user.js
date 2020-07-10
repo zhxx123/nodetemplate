@@ -28,12 +28,15 @@ const actions = {
   // user login
   login({ commit }, userInfo) {
     return new Promise((resolve, reject) => {
-      login(userInfo).then(response => {
-        const { data } = response
-        // console.log(data.access_token)
-        commit('SET_TOKEN', data.access_token)
-        setToken(data.access_token)
-        resolve()
+      login(userInfo).then((response) => {
+        if (response.status === 2000) {
+          const { data } = response
+          // console.log(data.access_token)
+          commit('SET_TOKEN', data.access_token)
+          setToken(data.access_token)
+          resolve()
+        }
+        reject(response.msg)
       }).catch(error => {
         reject(error)
       })

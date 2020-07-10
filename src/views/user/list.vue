@@ -1,13 +1,28 @@
 <template>
   <div class="app-container">
     <div class="filter-container">
-      <el-input v-model="listQuery.email" placeholder="请输入邮箱" style="width: 200px;" class="filter-item" @keyup.enter.native="handleFilter" />
-      <el-button v-waves class="filter-item" type="primary" icon="el-icon-search" @click="handleFilter">
-        Search
-      </el-button>
-      <el-button v-waves :loading="downloadLoading" class="filter-item" type="primary" icon="el-icon-download" @click="handleDownload">
-        Export
-      </el-button>
+      <el-input
+        v-model="listQuery.email"
+        placeholder="请输入邮箱"
+        style="width: 200px;"
+        class="filter-item"
+        @keyup.enter.native="handleFilter"
+      />
+      <el-button
+        v-waves
+        class="filter-item"
+        type="primary"
+        icon="el-icon-search"
+        @click="handleFilter"
+      >Search</el-button>
+      <el-button
+        v-waves
+        :loading="downloadLoading"
+        class="filter-item"
+        type="primary"
+        icon="el-icon-download"
+        @click="handleDownload"
+      >Export</el-button>
     </div>
 
     <el-table
@@ -18,7 +33,14 @@
       highlight-current-row
       style="width: 100%;"
     >
-      <el-table-column label="ID" prop="id" sortable align="center" width="80" :class-name="getSortClass('id')">
+      <el-table-column
+        label="ID"
+        prop="id"
+        sortable
+        align="center"
+        width="80"
+        :class-name="getSortClass('id')"
+      >
         <template slot-scope="scope">
           <span>{{ scope.row.id }}</span>
         </template>
@@ -55,7 +77,11 @@
       </el-table-column>
       <el-table-column label="角色" align="center" width="95">
         <template slot-scope="{row}">
-          <span v-if="row.role_id" class="link-type" @click="handleUpdateRole(row)">{{ roleParse(row.role_id) }}</span>
+          <span
+            v-if="row.role_id"
+            class="link-type"
+            @click="handleUpdateRole(row)"
+          >{{ roleParse(row.role_id) }}</span>
           <span v-else>0</span>
         </template>
       </el-table-column>
@@ -66,20 +92,29 @@
       </el-table-column>
       <el-table-column label="操作" align="center" width="230" class-name="small-padding fixed-width">
         <template slot-scope="{row}">
-          <el-button type="primary" size="mini" @click="handleUpdateUserInfo(row)">
-            重置密码
-          </el-button>
-          <el-button size="mini" type="danger" disabled @click="handleDelete(row)">
-            删除
-          </el-button>
+          <el-button type="primary" size="mini" @click="handleUpdateUserInfo(row)">重置密码</el-button>
+          <el-button size="mini" type="danger" disabled @click="handleDelete(row)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
 
-    <pagination v-show="total>0" :total="total" :page.sync="listQuery.page" :limit.sync="listQuery.limit" @pagination="getList" />
+    <pagination
+      v-show="total>0"
+      :total="total"
+      :page.sync="listQuery.page"
+      :limit.sync="listQuery.limit"
+      @pagination="getList"
+    />
 
     <el-dialog title="修改状态" :visible.sync="dialogFormVisible">
-      <el-form ref="dataForm" :rules="rules" :model="temp" label-position="left" label-width="100px" style="width: 300px; margin-left:50px;">
+      <el-form
+        ref="dataForm"
+        :rules="rules"
+        :model="temp"
+        label-position="left"
+        label-width="100px"
+        style="width: 300px; margin-left:50px;"
+      >
         <el-form-item label="用户ID" prop="user_id">
           <template>
             <span>{{ temp.user_id }}</span>
@@ -94,26 +129,45 @@
           <el-tag>{{ temp.now_status | statusFilter }}</el-tag>
         </el-form-item>
         <el-form-item label="修改状态" prop="upstatus">
-          <el-select v-model="temp.upstatus" class="filter-item" placeholder="Please select" @change="handleStatus">
-            <el-option v-for="item in statusOptions" :key="item.key" :label="item.value" :value="item.key" />
+          <el-select
+            v-model="temp.upstatus"
+            class="filter-item"
+            placeholder="Please select"
+            @change="handleStatus"
+          >
+            <el-option
+              v-for="item in statusOptions"
+              :key="item.key"
+              :label="item.value"
+              :value="item.key"
+            />
           </el-select>
         </el-form-item>
         <el-form-item v-if="isShowSelectTime" label="选择时间">
-          <el-date-picker v-model="temp.user_status" type="datetime" format="yyyy-MM-dd hh:mm:ss" value-format="timestamp" placeholder="Please pick a date" />
+          <el-date-picker
+            v-model="temp.user_status"
+            type="datetime"
+            format="yyyy-MM-dd hh:mm:ss"
+            value-format="timestamp"
+            placeholder="Please pick a date"
+          />
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="updateData()">
-          确定
-        </el-button>
+        <el-button @click="dialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateData()">确定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="修改角色" :visible.sync="roleDialogFormVisible">
-      <el-form ref="roleForm" :rules="rules" :model="roleTemp" label-position="left" label-width="100px" style="width: 300px; margin-left:50px;">
+      <el-form
+        ref="roleForm"
+        :rules="rules"
+        :model="roleTemp"
+        label-position="left"
+        label-width="100px"
+        style="width: 300px; margin-left:50px;"
+      >
         <el-form-item label="用户ID" prop="user_id">
           <template>
             <span>{{ roleTemp.user_id }}</span>
@@ -170,17 +224,20 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="roleDialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="updateRoleData()">
-          确定
-        </el-button>
+        <el-button @click="roleDialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateRoleData()">确定</el-button>
       </div>
     </el-dialog>
 
     <el-dialog title="重置密码" :visible.sync="userInfoDialogFormVisible">
-      <el-form ref="userInfoForm" :rules="rules" :model="userInfoTemp" label-position="left" label-width="100px" style="width: 300px; margin-left:50px;">
+      <el-form
+        ref="userInfoForm"
+        :rules="rules"
+        :model="userInfoTemp"
+        label-position="left"
+        label-width="100px"
+        style="width: 300px; margin-left:50px;"
+      >
         <el-form-item label="用户ID" prop="user_id">
           <template>
             <span>{{ userInfoTemp.user_id }}</span>
@@ -203,20 +260,20 @@
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
-        <el-button @click="userInfoDialogFormVisible = false">
-          取消
-        </el-button>
-        <el-button type="primary" @click="updateUserInfoData()">
-          确定
-        </el-button>
+        <el-button @click="userInfoDialogFormVisible = false">取消</el-button>
+        <el-button type="primary" @click="updateUserInfoData()">确定</el-button>
       </div>
     </el-dialog>
-
   </div>
 </template>
 
 <script>
-import { getUserList, updateUserStatus, updateUserRole, updateUserInfo } from '@/api/userAction'
+import {
+  getUserList,
+  updateUserStatus,
+  updateUserRole,
+  updateUserInfo
+} from '@/api/userAction'
 import waves from '@/directive/waves' // waves directive
 import { parseTime } from '@/utils'
 import Pagination from '@/components/Pagination' // secondary package based on el-pagination
@@ -284,10 +341,18 @@ export default {
       userInfoDialogFormVisible: false,
       isShowSelectTime: false,
       rules: {
-        user_id: [{ required: true, message: 'userid is required', trigger: 'change' }],
-        email: [{ required: true, message: 'email is required', trigger: 'change' }],
-        role_id: [{ required: true, message: 'role is required', trigger: 'change' }],
-        user_status: [{ required: true, message: 'status is required', trigger: 'blur' }]
+        user_id: [
+          { required: true, message: 'userid is required', trigger: 'change' }
+        ],
+        email: [
+          { required: true, message: 'email is required', trigger: 'change' }
+        ],
+        role_id: [
+          { required: true, message: 'role is required', trigger: 'change' }
+        ],
+        user_status: [
+          { required: true, message: 'status is required', trigger: 'blur' }
+        ]
       },
       downloadLoading: false
     }
@@ -327,13 +392,16 @@ export default {
       return res.join(',')
     },
     handleStatus(value) {
-      if (value === 0) { // 正常
+      if (value === 0) {
+        // 正常
         this.temp.user_status = 0
         this.isShowSelectTime = false
-      } else if (value === 1) { // 锁定
+      } else if (value === 1) {
+        // 锁定
         // this.temp.status = 16000
         this.isShowSelectTime = true
-      } else { // 永久锁定
+      } else {
+        // 永久锁定
         this.temp.user_status = -1
         this.isShowSelectTime = false
       }
@@ -362,9 +430,9 @@ export default {
       })
     },
     updateData() {
-      this.$refs['dataForm'].validate((valid) => {
+      this.$refs['dataForm'].validate(valid => {
         if (valid) {
-          console.log('temp:', this.temp)
+          // console.log('temp:', this.temp)
           if (this.temp.upstatus === 1 && this.temp.user_status === 0) {
             this.$notify({
               title: '修改状态',
@@ -376,7 +444,11 @@ export default {
           }
 
           let tmpTime = this.temp.user_status
-          if (this.temp.upstatus === 1 && (typeof tmpTime === 'number') && (tmpTime.toString().length === 13)) {
+          if (
+            this.temp.upstatus === 1 &&
+            typeof tmpTime === 'number' &&
+            tmpTime.toString().length === 13
+          ) {
             tmpTime = tmpTime / 1000
           }
           if (this.temp.upstatus === 0) {
@@ -384,23 +456,25 @@ export default {
           }
 
           const tempData = {
-            'userId': this.temp.user_id,
-            'email': this.temp.email,
-            'userStatus': tmpTime
+            userId: this.temp.user_id,
+            email: this.temp.email,
+            userStatus: tmpTime
           }
           // console.log('updateData', this.temp)
-          updateUserStatus(tempData).then(() => {
-            this.dialogFormVisible = false
-            this.$notify({
-              title: '修改状态',
-              message: '更新成功',
-              type: 'success',
-              duration: 2000
-            })
-            // 初始化 this.temp
-            this.resetTmp()
-            // 重新刷新 UserList
-            this.getList()
+          updateUserStatus(tempData).then(response => {
+            if (response.status === 2000) {
+              this.dialogFormVisible = false
+              this.$notify({
+                title: '修改状态',
+                message: '更新成功',
+                type: 'success',
+                duration: 2000
+              })
+              // 初始化 this.temp
+              this.resetTmp()
+              // 重新刷新 UserList
+              this.getList()
+            }
           })
         }
       })
@@ -424,46 +498,48 @@ export default {
       })
     },
     updateRoleData() {
-      this.$refs['roleForm'].validate((valid) => {
+      this.$refs['roleForm'].validate(valid => {
         if (valid) {
           const roleid = this.rolesToInt(this.roleTemp)
 
           if (roleid !== this.roleTemp.role_id) {
             const tempData = {
-              'userId': this.roleTemp.user_id,
-              'roleId': roleid
+              userId: this.roleTemp.user_id,
+              roleId: roleid
             }
             // console.log('updateData', tempData)
-            updateUserRole(tempData).then(response => {
-              if (response.status === 2000) {
-                this.roleDialogFormVisible = false
-                this.$notify({
-                  title: '修改角色',
-                  message: '更新成功',
-                  type: 'success',
-                  duration: 2000
-                })
-                // 初始化 this.temp
-                this.resetTmp()
-                // 重新刷新 UserList
-                this.getList()
-              } else {
-                this.$notify({
-                  title: '修改角色',
-                  message: response.msg || '失败',
-                  type: 'error',
-                  duration: 5000
-                })
-              }
-            }).catch(err => {
-              console.error(err)
-              this.$notify({
-                title: '失败',
-                message: err,
-                type: 'error',
-                duration: 4000
+            updateUserRole(tempData)
+              .then(response => {
+                if (response.status === 2000) {
+                  this.roleDialogFormVisible = false
+                  this.$notify({
+                    title: '修改角色',
+                    message: '更新成功',
+                    type: 'success',
+                    duration: 2000
+                  })
+                  // 初始化 this.temp
+                  this.resetTmp()
+                  // 重新刷新 UserList
+                  this.getList()
+                } else {
+                  this.$notify({
+                    title: '修改角色',
+                    message: response.msg || '失败',
+                    type: 'error',
+                    duration: 5000
+                  })
+                }
               })
-            })
+              .catch(err => {
+                console.error(err)
+                this.$notify({
+                  title: '失败',
+                  message: err,
+                  type: 'error',
+                  duration: 4000
+                })
+              })
           } else {
             this.roleDialogFormVisible = false
             this.$notify({
@@ -479,22 +555,22 @@ export default {
     rolesToInt(roleTemp) {
       let roleID = 0
       if (roleTemp.normal_role === '1') {
-        roleID |= (1 << 0)
+        roleID |= 1 << 0
       } else {
         if (roleTemp.do_role === '1') {
-          roleID |= (1 << 1)
+          roleID |= 1 << 1
         }
         if (roleTemp.op_role === '1') {
-          roleID |= (1 << 2)
+          roleID |= 1 << 2
         }
         if (roleTemp.fe_role === '1') {
-          roleID |= (1 << 3)
+          roleID |= 1 << 3
         }
         if (roleTemp.admin_role === '1') {
-          roleID |= (1 << 4)
+          roleID |= 1 << 4
         }
         if (roleTemp.super_role === '1') {
-          roleID |= (1 << 5)
+          roleID |= 1 << 5
         }
       }
       return roleID
@@ -513,10 +589,16 @@ export default {
       })
     },
     updateUserInfoData() {
-      this.$refs['userInfoForm'].validate((valid) => {
+      this.$refs['userInfoForm'].validate(valid => {
         if (valid) {
-          if (this.userInfoTemp.new_email !== '' || this.userInfoTemp.password !== '') {
-            if (this.userInfoTemp.password !== '' && this.userInfoTemp.check_password !== this.userInfoTemp.password) {
+          if (
+            this.userInfoTemp.new_email !== '' ||
+            this.userInfoTemp.password !== ''
+          ) {
+            if (
+              this.userInfoTemp.password !== '' &&
+              this.userInfoTemp.check_password !== this.userInfoTemp.password
+            ) {
               this.$notify({
                 title: '修改用户信息',
                 message: '两次密码不一致',
@@ -526,9 +608,9 @@ export default {
               return
             }
             const tempData = {
-              'userId': this.userInfoTemp.user_id,
-              'email': this.userInfoTemp.new_email,
-              'password': this.userInfoTemp.password
+              userId: this.userInfoTemp.user_id,
+              email: this.userInfoTemp.new_email,
+              password: this.userInfoTemp.password
             }
             // console.log('updateData', tempData)
             updateUserInfo(tempData).then(response => {
@@ -540,7 +622,7 @@ export default {
                   type: 'success',
                   duration: 2000
                 })
-              // 重新刷新 UserList
+                // 重新刷新 UserList
                 //   this.getList()
               } else {
                 this.$notify({
@@ -577,7 +659,13 @@ export default {
       this.downloadLoading = true
       import('@/vendor/Export2Excel').then(excel => {
         const tHeader = ['timestamp', 'title', 'type', 'importance', 'status']
-        const filterVal = ['timestamp', 'title', 'type', 'importance', 'status']
+        const filterVal = [
+          'timestamp',
+          'title',
+          'type',
+          'importance',
+          'status'
+        ]
         const data = this.formatJson(filterVal, this.list)
         excel.export_json_to_excel({
           header: tHeader,
@@ -588,13 +676,15 @@ export default {
       })
     },
     formatJson(filterVal, jsonData) {
-      return jsonData.map(v => filterVal.map(j => {
-        if (j === 'timestamp') {
-          return parseTime(v[j])
-        } else {
-          return v[j]
-        }
-      }))
+      return jsonData.map(v =>
+        filterVal.map(j => {
+          if (j === 'timestamp') {
+            return parseTime(v[j])
+          } else {
+            return v[j]
+          }
+        })
+      )
     },
     getSortClass: function(key) {
       const sort = this.listQuery.sort

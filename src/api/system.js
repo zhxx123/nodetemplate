@@ -1,7 +1,13 @@
-import request from '@/utils/request'
+/*
+ * @Author: zhxx
+ * @Date: 2020-07-10 10:43:46
+ * @LastEditors: zhxx
+ * @LastEditTime: 2020-07-10 14:50:35
+ */
+import service from '@/utils/request'
 
 export function getSystemBasicInfo(name) {
-  return request({
+  return service({
     url: '/admin/sys/basic',
     method: 'get',
     params: name
@@ -9,7 +15,7 @@ export function getSystemBasicInfo(name) {
 }
 
 export function getSystemSimpleInfo(query) {
-  return request({
+  return service({
     url: '/admin/sys/simple',
     method: 'get',
     params: query
@@ -18,7 +24,7 @@ export function getSystemSimpleInfo(query) {
 
 // 获取系统设置
 export function getAdminSetings(query) {
-  return request({
+  return service({
     url: '/admin/settings/list',
     method: 'get',
     params: query
@@ -26,7 +32,7 @@ export function getAdminSetings(query) {
 }
 // 更新系统设置
 export function updateAdminSetings(data) {
-  return request({
+  return service({
     url: '/admin/settings/update',
     method: 'put',
     data
@@ -36,7 +42,7 @@ export function updateAdminSetings(data) {
 // 获取git 提交记录
 
 export function getGitLogsInfo(query) {
-  return request({
+  return service({
     url: '/admin/logs/github',
     method: 'get',
     params: query

@@ -1,7 +1,7 @@
-import request from '@/utils/request'
+import service from '@/utils/request'
 
 export function login(data) {
-  return request({
+  return service({
     url: '/admin/login',
     method: 'post',
     data
@@ -9,14 +9,14 @@ export function login(data) {
 }
 
 export function getInfo() {
-  return request({
+  return service({
     url: '/admin/users/info',
     method: 'get'
   })
 }
 
 export function logout() {
-  return request({
+  return service({
     url: '/admin/users/logout',
     method: 'put'
   })
@@ -24,7 +24,7 @@ export function logout() {
 
 // 获取用户登录记录
 export function getUserOauthInfo(query) {
-  return request({
+  return service({
     url: '/admin/logs/login',
     method: 'get',
     params: query
