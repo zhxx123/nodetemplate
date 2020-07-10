@@ -1,270 +1,562 @@
 <template>
-  <div class="app-container">
-    <el-button type="primary" @click="handleAddRole">New Role</el-button>
-
-    <el-table :data="rolesList" style="width: 100%;margin-top:30px;" border>
-      <el-table-column align="center" label="Role Key" width="220">
-        <template slot-scope="scope">
-          {{ scope.row.key }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Role Name" width="220">
-        <template slot-scope="scope">
-          {{ scope.row.name }}
-        </template>
-      </el-table-column>
-      <el-table-column align="header-center" label="Description">
-        <template slot-scope="scope">
-          {{ scope.row.description }}
-        </template>
-      </el-table-column>
-      <el-table-column align="center" label="Operations">
-        <template slot-scope="scope">
-          <el-button type="primary" size="small" @click="handleEdit(scope)">Edit</el-button>
-          <el-button type="danger" size="small" @click="handleDelete(scope)">Delete</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
-
-    <el-dialog :visible.sync="dialogVisible" :title="dialogType==='edit'?'Edit Role':'New Role'">
-      <el-form :model="role" label-width="80px" label-position="left">
-        <el-form-item label="Name">
-          <el-input v-model="role.name" placeholder="Role Name" />
-        </el-form-item>
-        <el-form-item label="Desc">
-          <el-input
-            v-model="role.description"
-            :autosize="{ minRows: 2, maxRows: 4}"
-            type="textarea"
-            placeholder="Role Description"
+  <div class="index-container">
+    <el-row :gutter="20">
+      <el-col :xs="24" :sm="24" :md="24" :lg="24" :xl="24" />
+      <el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+        <el-card shadow="never">
+          <div slot="header">
+            <span>访问量</span>
+          </div>
+          <vab-chart
+            :autoresize="true"
+            theme="vab-echarts-theme"
+            :options="fwl"
           />
-        </el-form-item>
-        <el-form-item label="Menus">
-          <el-tree
-            ref="tree"
-            :check-strictly="checkStrictly"
-            :data="routesData"
-            :props="defaultProps"
-            show-checkbox
-            node-key="path"
-            class="permission-tree"
+          <div class="bottom">
+            <span>日均访问量:
+
+              <vab-count
+                :start-val="config1.startVal"
+                :end-val="config1.endVal"
+                :duration="config1.duration"
+                :separator="config1.separator"
+                :prefix="config1.prefix"
+                :suffix="config1.suffix"
+                :decimals="config1.decimals"
+              />
+            </span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
+        <el-card shadow="never">
+          <div slot="header">
+            <span>授权数</span>
+          </div>
+          <vab-chart
+            :autoresize="true"
+            theme="vab-echarts-theme"
+            :options="sqs"
           />
-        </el-form-item>
-      </el-form>
-      <div style="text-align:right;">
-        <el-button type="danger" @click="dialogVisible=false">Cancel</el-button>
-        <el-button type="primary" @click="confirmRole">Confirm</el-button>
-      </div>
-    </el-dialog>
+          <div class="bottom">
+            <span>总授权数:
+              <vab-count
+                :start-val="config2.startVal"
+                :end-val="config2.endVal"
+                :duration="config2.duration"
+                :separator="config2.separator"
+                :prefix="config2.prefix"
+                :suffix="config2.suffix"
+                :decimals="config2.decimals"
+              /></span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
+        <el-card shadow="never">
+          <div slot="header">
+            <span>词云</span>
+          </div>
+          <vab-chart
+            :autoresize="true"
+            theme="vab-echarts-theme"
+            :options="cy"
+            @zr:click="handleZrClick"
+            @click="handleClick"
+          />
+          <div class="bottom">
+            <span>词云数量:<vab-count
+              :start-val="config3.startVal"
+              :end-val="config3.endVal"
+              :duration="config3.duration"
+              :separator="config3.separator"
+              :prefix="config3.prefix"
+              :suffix="config3.suffix"
+              :decimals="config3.decimals"
+            /></span>
+          </div>
+        </el-card>
+      </el-col>
+      <el-col :xs="24" :sm="24" :md="24" :lg="13" :xl="13">
+        <el-card class="card" shadow="never">
+          <div slot="header">
+            <span>GDP分布图</span>
+          </div>
+          <vab-chart
+            :autoresize="true"
+            theme="vab-echarts-theme"
+            :options="zgdt"
+          />
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 
 <script>
-import path from 'path'
-import { deepClone } from '@/utils'
-import { getRoutes, getRoles, addRole, deleteRole, updateRole } from '@/api/role'
-
-const defaultRole = {
-  key: '',
-  name: '',
-  description: '',
-  routes: []
-}
-
+import VabChart from '@/plugins/echarts'
+import VabCount from '@/plugins/vabCount'
 export default {
+  name: 'Index',
+  components: {
+    VabChart,
+    VabCount
+  },
   data() {
     return {
-      role: Object.assign({}, defaultRole),
-      routes: [],
-      rolesList: [],
-      dialogVisible: false,
-      dialogType: 'new',
-      checkStrictly: false,
-      defaultProps: {
-        children: 'children',
-        label: 'title'
+      timer: 0,
+      updateTime: process.env.VUE_APP_UPDATE_TIME,
+      nodeEnv: process.env.NODE_ENV,
+      config1: {
+        startVal: 0,
+        endVal: 20000,
+        decimals: 0,
+        prefix: '',
+        suffix: '',
+        separator: ',',
+        duration: 8000
+      },
+      config2: {
+        startVal: 0,
+        endVal: 200000,
+        decimals: 0,
+        prefix: '',
+        suffix: '',
+        separator: ',',
+        duration: 8000
+      },
+      config3: {
+        startVal: 0,
+        endVal: 20000,
+        decimals: 0,
+        prefix: '',
+        suffix: '',
+        separator: ',',
+        duration: 8000
+      },
+
+      // 访问量
+      fwl: {
+        grid: {
+          top: '4%',
+          left: '2%',
+          right: '4%',
+          bottom: '0%',
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            boundaryGap: false,
+            data: [],
+            axisTick: {
+              alignWithLabel: true
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '访问量',
+            type: 'line',
+            data: [],
+            smooth: true,
+            areaStyle: {}
+          }
+        ]
+      },
+      // 授权数
+      sqs: {
+        grid: {
+          top: '4%',
+          left: '2%',
+          right: '4%',
+          bottom: '0%',
+          containLabel: true
+        },
+        xAxis: [
+          {
+            type: 'category',
+            /* boundaryGap: false,*/
+            data: ['0时', '4时', '8时', '12时', '16时', '20时', '24时'],
+            axisTick: {
+              alignWithLabel: true
+            }
+          }
+        ],
+        yAxis: [
+          {
+            type: 'value'
+          }
+        ],
+        series: [
+          {
+            name: '授权数',
+            type: 'bar',
+            barWidth: '60%',
+            data: [10, 52, 20, 33, 39, 33, 22]
+          }
+        ]
+      },
+      // 词云
+      cy: {
+        grid: {
+          top: '4%',
+          left: '2%',
+          right: '4%',
+          bottom: '0%'
+        },
+        series: [
+          {
+            type: 'wordCloud',
+            gridSize: 15,
+            sizeRange: [12, 40],
+            rotationRange: [0, 0],
+            width: '100%',
+            height: '100%',
+            textStyle: {
+              normal: {
+                color() {
+                  const arr = [
+                    '#1890FF',
+                    '#36CBCB',
+                    '#4ECB73',
+                    '#FBD437',
+                    '#F2637B',
+                    '#975FE5'
+                  ]
+                  const index = Math.floor(Math.random() * arr.length)
+                  return arr[index]
+                }
+              }
+            },
+            data: [
+              {
+                name: 'vue-admin-beautiful',
+                value: 15000
+              },
+              {
+                name: 'element',
+                value: 10081
+              },
+              {
+                name: 'beautiful',
+                value: 9386
+              },
+
+              {
+                name: 'vue',
+                value: 6500
+              },
+              {
+                name: 'chuzhixin',
+                value: 6000
+              },
+              {
+                name: 'good',
+                value: 4500
+              },
+              {
+                name: 'success',
+                value: 3800
+              },
+              {
+                name: 'never',
+                value: 3000
+              },
+              {
+                name: 'boy',
+                value: 2500
+              },
+              {
+                name: 'girl',
+                value: 2300
+              },
+              {
+                name: 'github',
+                value: 2000
+              },
+              {
+                name: 'hbuilder',
+                value: 1900
+              },
+              {
+                name: 'dcloud',
+                value: 1800
+              },
+              {
+                name: 'china',
+                value: 1700
+              },
+              {
+                name: '1204505056',
+                value: 1600
+              },
+              {
+                name: '972435319',
+                value: 1500
+              },
+              {
+                name: 'young',
+                value: 1200
+              },
+              {
+                name: 'old',
+                value: 1100
+              },
+              {
+                name: 'vuex',
+                value: 900
+              },
+              {
+                name: 'router',
+                value: 800
+              },
+              {
+                name: 'money',
+                value: 700
+              },
+              {
+                name: 'qingdao',
+                value: 800
+              },
+              {
+                name: 'yantai',
+                value: 9000
+              },
+              {
+                name: 'author is very cool',
+                value: 9200
+              }
+            ]
+          }
+        ]
+      },
+      // 中国地图
+      zgdt: {
+        title: {
+          text: '2099年全国GDP分布',
+          subtext: '数据来自vue-admin-beautiful杜撰'
+        },
+        tooltip: {
+          trigger: 'item'
+        },
+        dataRange: {
+          orient: 'horizontal',
+          min: 0,
+          max: 55000,
+          text: ['高', '低'],
+          splitNumber: 0
+        },
+        series: [
+          {
+            name: '2099年全国GDP分布',
+            type: 'map',
+            roam: false,
+            zoom: 1.25,
+            mapType: 'china',
+            mapLocation: {
+              x: 'center'
+            },
+            selectedMode: 'multiple',
+            itemStyle: {
+              normal: {
+                label: {
+                  show: false
+                }
+              },
+              emphasis: {
+                label: {
+                  show: true
+                }
+              }
+            },
+            data: [
+              { name: '西藏', value: 605.83 },
+              { name: '青海', value: 1670.44 },
+              { name: '宁夏', value: 2102.21 },
+              { name: '海南', value: 2522.66 },
+              { name: '甘肃', value: 5020.37 },
+              { name: '贵州', value: 5701.84 },
+              { name: '新疆', value: 6610.05 },
+              { name: '云南', value: 8893.12 },
+              { name: '重庆', value: 10011.37 },
+              { name: '吉林', value: 10568.83 },
+              { name: '山西', value: 11237.55 },
+              { name: '天津', value: 11307.28 },
+              { name: '江西', value: 11702.82 },
+              { name: '广西', value: 11720.87 },
+              { name: '陕西', value: 12512.3 },
+              { name: '黑龙江', value: 12582 },
+              { name: '内蒙古', value: 14359.88 },
+              { name: '安徽', value: 15300.65 },
+              { name: '北京', value: 16251.93 },
+              { name: '福建', value: 17560.18 },
+              { name: '上海', value: 19195.69 },
+              { name: '湖北', value: 19632.26 },
+              { name: '湖南', value: 19669.56 },
+              { name: '四川', value: 21026.68 },
+              { name: '辽宁', value: 22226.7 },
+              { name: '河北', value: 24515.76 },
+              { name: '河南', value: 26931.03 },
+              { name: '浙江', value: 32318.85 },
+              { name: '山东', value: 45361.85, selected: true },
+              { name: '江苏', value: 49110.27 },
+              { name: '广东', value: 53210.28 },
+              { name: '深圳', value: 5600.00 }
+            ]
+          }
+        ]
       }
-    }
-  },
-  computed: {
-    routesData() {
-      return this.routes
+      // 其他信息
     }
   },
   created() {
-    // Mock: get all routes and roles list from server
-    this.getRoutes()
-    this.getRoles()
+    this.fetchData()
+  },
+  beforeDestroy() {
+    clearInterval(this.timer)
+  },
+  mounted() {
+    const base = +new Date(2020, 1, 1)
+    const oneDay = 24 * 3600 * 1000
+    const date = []
+
+    const data = [Math.random() * 1500]
+    let now = new Date(base)
+
+    const addData = (shift) => {
+      now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
+      date.push(now)
+      data.push(this.$baseLodash.random(20000, 60000))
+
+      if (shift) {
+        date.shift()
+        data.shift()
+      }
+
+      now = new Date(+new Date(now) + oneDay)
+    }
+
+    for (let i = 1; i < 6; i++) {
+      addData()
+    }
+    addData(true)
+    this.fwl.xAxis[0].data = date
+    this.fwl.series[0].data = data
+    this.timer = setInterval(() => {
+      addData(true)
+      this.fwl.xAxis[0].data = date
+      this.fwl.series[0].data = data
+    }, 3000)
   },
   methods: {
-    async getRoutes() {
-      const res = await getRoutes()
-      this.serviceRoutes = res.data
-      this.routes = this.generateRoutes(res.data)
+    handleClick(e) {
+      this.$baseMessage(`点击了${e.name},这里可以写跳转`)
     },
-    async getRoles() {
-      const res = await getRoles()
-      this.rolesList = res.data
-    },
-
-    // Reshape the routes structure so that it looks the same as the sidebar
-    generateRoutes(routes, basePath = '/') {
-      const res = []
-
-      for (let route of routes) {
-        // skip some route
-        if (route.hidden) { continue }
-
-        const onlyOneShowingChild = this.onlyOneShowingChild(route.children, route)
-
-        if (route.children && onlyOneShowingChild && !route.alwaysShow) {
-          route = onlyOneShowingChild
-        }
-
-        const data = {
-          path: path.resolve(basePath, route.path),
-          title: route.meta && route.meta.title
-
-        }
-
-        // recursive child routes
-        if (route.children) {
-          data.children = this.generateRoutes(route.children, data.path)
-        }
-        res.push(data)
-      }
-      return res
-    },
-    generateArr(routes) {
-      let data = []
-      routes.forEach(route => {
-        data.push(route)
-        if (route.children) {
-          const temp = this.generateArr(route.children)
-          if (temp.length > 0) {
-            data = [...data, ...temp]
-          }
-        }
-      })
-      return data
-    },
-    handleAddRole() {
-      this.role = Object.assign({}, defaultRole)
-      if (this.$refs.tree) {
-        this.$refs.tree.setCheckedNodes([])
-      }
-      this.dialogType = 'new'
-      this.dialogVisible = true
-    },
-    handleEdit(scope) {
-      this.dialogType = 'edit'
-      this.dialogVisible = true
-      this.checkStrictly = true
-      this.role = deepClone(scope.row)
-      this.$nextTick(() => {
-        const routes = this.generateRoutes(this.role.routes)
-        this.$refs.tree.setCheckedNodes(this.generateArr(routes))
-        // set checked state of a node not affects its father and child nodes
-        this.checkStrictly = false
-      })
-    },
-    handleDelete({ $index, row }) {
-      this.$confirm('Confirm to remove the role?', 'Warning', {
-        confirmButtonText: 'Confirm',
-        cancelButtonText: 'Cancel',
-        type: 'warning'
-      })
-        .then(async() => {
-          await deleteRole(row.key)
-          this.rolesList.splice($index, 1)
-          this.$message({
-            type: 'success',
-            message: 'Delete succed!'
-          })
-        })
-        .catch(err => { console.error(err) })
-    },
-    generateTree(routes, basePath = '/', checkedKeys) {
-      const res = []
-
-      for (const route of routes) {
-        const routePath = path.resolve(basePath, route.path)
-
-        // recursive child routes
-        if (route.children) {
-          route.children = this.generateTree(route.children, routePath, checkedKeys)
-        }
-
-        if (checkedKeys.includes(routePath) || (route.children && route.children.length >= 1)) {
-          res.push(route)
-        }
-      }
-      return res
-    },
-    async confirmRole() {
-      const isEdit = this.dialogType === 'edit'
-
-      const checkedKeys = this.$refs.tree.getCheckedKeys()
-      this.role.routes = this.generateTree(deepClone(this.serviceRoutes), '/', checkedKeys)
-
-      if (isEdit) {
-        await updateRole(this.role.key, this.role)
-        for (let index = 0; index < this.rolesList.length; index++) {
-          if (this.rolesList[index].key === this.role.key) {
-            this.rolesList.splice(index, 1, Object.assign({}, this.role))
-            break
-          }
-        }
-      } else {
-        const { data } = await addRole(this.role)
-        this.role.key = data.key
-        this.rolesList.push(this.role)
-      }
-
-      const { description, key, name } = this.role
-      this.dialogVisible = false
-      this.$notify({
-        title: 'Success',
-        dangerouslyUseHTMLString: true,
-        message: `
-            <div>Role Key: ${key}</div>
-            <div>Role Name: ${name}</div>
-            <div>Description: ${description}</div>
-          `,
-        type: 'success'
-      })
-    },
-    // reference: src/view/layout/components/Sidebar/SidebarItem.vue
-    onlyOneShowingChild(children = [], parent) {
-      let onlyOneChild = null
-      const showingChildren = children.filter(item => !item.hidden)
-
-      // When there is only one child route, the child route is displayed by default
-      if (showingChildren.length === 1) {
-        onlyOneChild = showingChildren[0]
-        onlyOneChild.path = path.resolve(parent.path, onlyOneChild.path)
-        return onlyOneChild
-      }
-
-      // Show parent if there are no child route to display
-      if (showingChildren.length === 0) {
-        onlyOneChild = { ... parent, path: '', noShowingChildren: true }
-        return onlyOneChild
-      }
-
-      return false
+    handleZrClick(e) {},
+    handleChangeTheme() {
+      this.$baseEventBus.$emit('theme')
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
-.app-container {
-  .roles-table {
-    margin-top: 30px;
+.index-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  background: #f5f7f8 !important;
+
+  ::v-deep {
+    .el-alert {
+      padding: 20px;
+
+      &--info.is-light {
+        min-height: 82px;
+        padding: 20px;
+        margin-bottom: 15px;
+        color: #909399;
+        background-color: white;
+        border: 1px solid #ebeef5;
+      }
+    }
+
+    .el-card__body {
+      .echarts {
+        width: 100%;
+        height: 140px;
+      }
+    }
   }
-  .permission-tree {
-    margin-bottom: 30px;
+
+  .card {
+    min-height: 420px;
+
+    ::v-deep {
+      .el-card__body {
+        .echarts {
+          width: 100%;
+          height: 305px;
+        }
+      }
+    }
+  }
+
+  .bottom {
+    height: 40px;
+    padding-top: 20px;
+    margin-top: 5px;
+    color: #595959;
+    text-align: left;
+    border-top: 1px solid #dcdfe6;
+  }
+
+  .table {
+    width: 100%;
+    color: #666;
+    border-collapse: collapse;
+    background-color: #fff;
+
+    td {
+      position: relative;
+      min-height: 20px;
+      padding: 9px 15px;
+      font-size: 14px;
+      line-height: 20px;
+      border: 1px solid #e6e6e6;
+
+      &:nth-child(odd) {
+        width: 20%;
+        text-align: right;
+        background-color: #f7f7f7;
+      }
+    }
+  }
+
+  .icon-panel {
+    height: 100px;
+    text-align: center;
+    cursor: pointer;
+
+    svg {
+      font-size: 40px;
+    }
+
+    p {
+      margin-top: 10px;
+    }
+  }
+
+  .bottom-btn {
+    margin-top: 5px;
+
+    button {
+      margin: 5px 10px 5px 0;
+    }
   }
 }
 </style>
