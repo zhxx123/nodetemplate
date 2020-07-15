@@ -20,7 +20,7 @@ export default {
     },
     height: {
       type: String,
-      default: '350px'
+      default: '200%'
     },
     autoResize: {
       type: Boolean,
@@ -61,7 +61,7 @@ export default {
       this.chart = echarts.init(this.$el, 'macarons')
       this.setOptions(this.chartData)
     },
-    setOptions({ xAxisData, oneMinData, fiveMinData, fifteenMinData, name, tips } = {}) {
+    setOptions({ xAxisData, yAxisData, name, tips } = {}) {
       this.chart.setOption({
         xAxis: {
           data: xAxisData,
@@ -70,6 +70,7 @@ export default {
           axisTick: {
             show: false
           },
+
           axisLabel: {
             interval: 0, // 横轴信息全部显示
             formatter: function(params) {
@@ -78,8 +79,8 @@ export default {
               var provideNumber = 10// 每行能显示的字的个数
               var rowNumber = Math.ceil(paramsNameNumber / provideNumber)// 换行的话，需要显示几行，向上取整
               /**
-                             * 判断标签的个数是否大于规定的个数， 如果大于，则进行换行处理 如果不大于，即等于或小于，就返回原标签
-                             */
+                * 判断标签的个数是否大于规定的个数， 如果大于，则进行换行处理 如果不大于，即等于或小于，就返回原标签
+                */
               // 条件等同于rowNumber>1
               if (paramsNameNumber > provideNumber) {
                 /** 循环每一行,p表示行 */
@@ -115,16 +116,18 @@ export default {
         },
         tooltip: {
           trigger: 'axis',
-          formatter: tips + '<br/>{a0} : {c0}% <br/>{a1} : {c1}%<br/>{a2} : {c2}%',
+          formatter: tips + '<br/>{c1} : {c0}',
           axisPointer: {
             type: 'cross'
           },
           padding: [5, 10]
         },
+
         yAxis: {
           axisTick: {
             show: true
           },
+
           min: function(value) {
             if (value.min < 10) {
               return 0
@@ -139,18 +142,29 @@ export default {
           }
         },
         legend: {
-          data: name
+          data: tips
         },
         series: [
           {
-            name: name[0],
+            name: name,
             smooth: true,
             type: 'line',
+            label: {
+              normal: {
+                show: true,
+                position: 'top'
+              },
+              textStyle: {
+                fontWeight: 'bolder',
+                fontSize: '12',
+                fontFamily: '微软雅黑'
+              }
+            },
             itemStyle: {
               normal: {
-                color: '#FF6347',
+                color: '#1893ff',
                 lineStyle: {
-                  color: '#FF6347',
+                  color: '#1893ff',
                   width: 2
                 },
                 areaStyle: {
@@ -158,47 +172,7 @@ export default {
                 }
               }
             },
-            data: oneMinData,
-            animationDuration: 2800,
-            animationEasing: 'quadraticOut'
-          },
-          {
-            name: name[1],
-            smooth: true,
-            type: 'line',
-            itemStyle: {
-              normal: {
-                color: '#FFA500',
-                lineStyle: {
-                  color: '#FFA500',
-                  width: 2
-                },
-                areaStyle: {
-                  color: '#fef8ff'
-                }
-              }
-            },
-            data: fiveMinData,
-            animationDuration: 2800,
-            animationEasing: 'quadraticOut'
-          },
-          {
-            name: name[2],
-            smooth: true,
-            type: 'line',
-            itemStyle: {
-              normal: {
-                color: '#9932CC',
-                lineStyle: {
-                  color: '#9932CC',
-                  width: 2
-                },
-                areaStyle: {
-                  color: '#f8f8ff'
-                }
-              }
-            },
-            data: fifteenMinData,
+            data: yAxisData,
             animationDuration: 2800,
             animationEasing: 'quadraticOut'
           }]

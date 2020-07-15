@@ -7,11 +7,7 @@
           <div slot="header">
             <span>访问量</span>
           </div>
-          <vab-chart
-            :autoresize="true"
-            theme="vab-echarts-theme"
-            :options="fwl"
-          />
+          <bar-chart :chart-data="lineData" />
           <div class="bottom">
             <span>日均访问量:
 
@@ -31,15 +27,11 @@
       <el-col :xs="24" :sm="24" :md="12" :lg="6" :xl="6">
         <el-card shadow="never">
           <div slot="header">
-            <span>授权数</span>
+            <span>注册数</span>
           </div>
-          <vab-chart
-            :autoresize="true"
-            theme="vab-echarts-theme"
-            :options="sqs"
-          />
+          <line-chart :chart-data="lineData" />
           <div class="bottom">
-            <span>总授权数:
+            <span>总注册数:
               <vab-count
                 :start-val="config2.startVal"
                 :end-val="config2.endVal"
@@ -55,15 +47,9 @@
       <el-col :xs="24" :sm="24" :md="24" :lg="12" :xl="12">
         <el-card shadow="never">
           <div slot="header">
-            <span>词云</span>
+            <span>常见登录地</span>
           </div>
-          <vab-chart
-            :autoresize="true"
-            theme="vab-echarts-theme"
-            :options="cy"
-            @zr:click="handleZrClick"
-            @click="handleClick"
-          />
+          <word-cloud :data="cyData" />
           <div class="bottom">
             <span>词云数量:<vab-count
               :start-val="config3.startVal"
@@ -82,11 +68,7 @@
           <div slot="header">
             <span>GDP分布图</span>
           </div>
-          <vab-chart
-            :autoresize="true"
-            theme="vab-echarts-theme"
-            :options="zgdt"
-          />
+          <china-map :data="gdpData" />
         </el-card>
       </el-col>
     </el-row>
@@ -94,13 +76,19 @@
 </template>
 
 <script>
-import VabChart from '@/plugins/echarts'
+import BarChart from '../components/BarChart'
+import LineChart from '../components/LineChart'
+import WordCloud from '../components/WordCloud'
+import ChinaMap from '../components/ChinaMap'
 import VabCount from '@/plugins/vabCount'
 export default {
   name: 'Index',
   components: {
-    VabChart,
-    VabCount
+    BarChart,
+    WordCloud,
+    VabCount,
+    LineChart,
+    ChinaMap
   },
   data() {
     return {
@@ -109,350 +97,143 @@ export default {
       nodeEnv: process.env.NODE_ENV,
       config1: {
         startVal: 0,
-        endVal: 20000,
+        endVal: 300,
         decimals: 0,
         prefix: '',
         suffix: '',
         separator: ',',
-        duration: 8000
+        duration: 5000
       },
       config2: {
         startVal: 0,
-        endVal: 200000,
+        endVal: 2000,
         decimals: 0,
         prefix: '',
         suffix: '',
         separator: ',',
-        duration: 8000
+        duration: 5000
       },
       config3: {
         startVal: 0,
-        endVal: 20000,
+        endVal: 200,
         decimals: 0,
         prefix: '',
         suffix: '',
         separator: ',',
-        duration: 8000
+        duration: 4000
       },
+      lineData: {
+        xAxisData: ['0时', '4时', '8时', '12时', '16时', '20时', '24时'],
+        yAxisData: [10, 52, 20, 33, 39, 33, 22],
+        name: '访问量',
+        tips: '访问统计'
+      },
+      cyData: [
+        {
+          name: '深圳',
+          value: 100
+        },
+        {
+          name: '广州',
+          value: 70
+        },
+        {
+          name: '珠海',
+          value: 93
+        },
 
-      // 访问量
-      fwl: {
-        grid: {
-          top: '4%',
-          left: '2%',
-          right: '4%',
-          bottom: '0%',
-          containLabel: true
+        {
+          name: '郑州',
+          value: 65
         },
-        xAxis: [
-          {
-            type: 'category',
-            boundaryGap: false,
-            data: [],
-            axisTick: {
-              alignWithLabel: true
-            }
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        series: [
-          {
-            name: '访问量',
-            type: 'line',
-            data: [],
-            smooth: true,
-            areaStyle: {}
-          }
-        ]
-      },
-      // 授权数
-      sqs: {
-        grid: {
-          top: '4%',
-          left: '2%',
-          right: '4%',
-          bottom: '0%',
-          containLabel: true
+        {
+          name: '南阳',
+          value: 60
         },
-        xAxis: [
-          {
-            type: 'category',
-            /* boundaryGap: false,*/
-            data: ['0时', '4时', '8时', '12时', '16时', '20时', '24时'],
-            axisTick: {
-              alignWithLabel: true
-            }
-          }
-        ],
-        yAxis: [
-          {
-            type: 'value'
-          }
-        ],
-        series: [
-          {
-            name: '授权数',
-            type: 'bar',
-            barWidth: '60%',
-            data: [10, 52, 20, 33, 39, 33, 22]
-          }
-        ]
-      },
-      // 词云
-      cy: {
-        grid: {
-          top: '4%',
-          left: '2%',
-          right: '4%',
-          bottom: '0%'
+        {
+          name: '湖北',
+          value: 45
         },
-        series: [
-          {
-            type: 'wordCloud',
-            gridSize: 15,
-            sizeRange: [12, 40],
-            rotationRange: [0, 0],
-            width: '100%',
-            height: '100%',
-            textStyle: {
-              normal: {
-                color() {
-                  const arr = [
-                    '#1890FF',
-                    '#36CBCB',
-                    '#4ECB73',
-                    '#FBD437',
-                    '#F2637B',
-                    '#975FE5'
-                  ]
-                  const index = Math.floor(Math.random() * arr.length)
-                  return arr[index]
-                }
-              }
-            },
-            data: [
-              {
-                name: 'vue-admin-beautiful',
-                value: 15000
-              },
-              {
-                name: 'element',
-                value: 10081
-              },
-              {
-                name: 'beautiful',
-                value: 9386
-              },
-
-              {
-                name: 'vue',
-                value: 6500
-              },
-              {
-                name: 'chuzhixin',
-                value: 6000
-              },
-              {
-                name: 'good',
-                value: 4500
-              },
-              {
-                name: 'success',
-                value: 3800
-              },
-              {
-                name: 'never',
-                value: 3000
-              },
-              {
-                name: 'boy',
-                value: 2500
-              },
-              {
-                name: 'girl',
-                value: 2300
-              },
-              {
-                name: 'github',
-                value: 2000
-              },
-              {
-                name: 'hbuilder',
-                value: 1900
-              },
-              {
-                name: 'dcloud',
-                value: 1800
-              },
-              {
-                name: 'china',
-                value: 1700
-              },
-              {
-                name: '1204505056',
-                value: 1600
-              },
-              {
-                name: '972435319',
-                value: 1500
-              },
-              {
-                name: 'young',
-                value: 1200
-              },
-              {
-                name: 'old',
-                value: 1100
-              },
-              {
-                name: 'vuex',
-                value: 900
-              },
-              {
-                name: 'router',
-                value: 800
-              },
-              {
-                name: 'money',
-                value: 700
-              },
-              {
-                name: 'qingdao',
-                value: 800
-              },
-              {
-                name: 'yantai',
-                value: 9000
-              },
-              {
-                name: 'author is very cool',
-                value: 9200
-              }
-            ]
-          }
-        ]
-      },
-      // 中国地图
-      zgdt: {
-        title: {
-          text: '2099年全国GDP分布',
-          subtext: '数据来自vue-admin-beautiful杜撰'
+        {
+          name: '上海',
+          value: 38
         },
-        tooltip: {
-          trigger: 'item'
+        {
+          name: '江西',
+          value: 30
         },
-        dataRange: {
-          orient: 'horizontal',
-          min: 0,
-          max: 55000,
-          text: ['高', '低'],
-          splitNumber: 0
+        {
+          name: '东京',
+          value: 25
         },
-        series: [
-          {
-            name: '2099年全国GDP分布',
-            type: 'map',
-            roam: false,
-            zoom: 1.25,
-            mapType: 'china',
-            mapLocation: {
-              x: 'center'
-            },
-            selectedMode: 'multiple',
-            itemStyle: {
-              normal: {
-                label: {
-                  show: false
-                }
-              },
-              emphasis: {
-                label: {
-                  show: true
-                }
-              }
-            },
-            data: [
-              { name: '西藏', value: 605.83 },
-              { name: '青海', value: 1670.44 },
-              { name: '宁夏', value: 2102.21 },
-              { name: '海南', value: 2522.66 },
-              { name: '甘肃', value: 5020.37 },
-              { name: '贵州', value: 5701.84 },
-              { name: '新疆', value: 6610.05 },
-              { name: '云南', value: 8893.12 },
-              { name: '重庆', value: 10011.37 },
-              { name: '吉林', value: 10568.83 },
-              { name: '山西', value: 11237.55 },
-              { name: '天津', value: 11307.28 },
-              { name: '江西', value: 11702.82 },
-              { name: '广西', value: 11720.87 },
-              { name: '陕西', value: 12512.3 },
-              { name: '黑龙江', value: 12582 },
-              { name: '内蒙古', value: 14359.88 },
-              { name: '安徽', value: 15300.65 },
-              { name: '北京', value: 16251.93 },
-              { name: '福建', value: 17560.18 },
-              { name: '上海', value: 19195.69 },
-              { name: '湖北', value: 19632.26 },
-              { name: '湖南', value: 19669.56 },
-              { name: '四川', value: 21026.68 },
-              { name: '辽宁', value: 22226.7 },
-              { name: '河北', value: 24515.76 },
-              { name: '河南', value: 26931.03 },
-              { name: '浙江', value: 32318.85 },
-              { name: '山东', value: 45361.85, selected: true },
-              { name: '江苏', value: 49110.27 },
-              { name: '广东', value: 53210.28 },
-              { name: '深圳', value: 5600.00 }
-            ]
-          }
-        ]
-      }
+        {
+          name: '北京',
+          value: 23
+        },
+        {
+          name: '南京',
+          value: 20
+        },
+        {
+          name: '西京',
+          value: 10
+        },
+        {
+          name: '襄阳',
+          value: 1
+        },
+        {
+          name: '长沙',
+          value: 17
+        }
+      ],
+      gdpData: [
+        { name: '西藏', value: 605.83 },
+        { name: '青海', value: 1670.44 },
+        { name: '宁夏', value: 2102.21 },
+        { name: '海南', value: 2522.66 },
+        { name: '甘肃', value: 5020.37 },
+        { name: '贵州', value: 5701.84 },
+        { name: '新疆', value: 6610.05 },
+        { name: '云南', value: 8893.12 },
+        { name: '重庆', value: 10011.37 },
+        { name: '吉林', value: 10568.83 },
+        { name: '山西', value: 11237.55 },
+        { name: '天津', value: 11307.28 },
+        { name: '江西', value: 11702.82 },
+        { name: '广西', value: 11720.87 },
+        { name: '陕西', value: 12512.3 },
+        { name: '黑龙江', value: 12582 },
+        { name: '内蒙古', value: 14359.88 },
+        { name: '安徽', value: 15300.65 },
+        { name: '北京', value: 16251.93 },
+        { name: '福建', value: 17560.18 },
+        { name: '上海', value: 19195.69 },
+        { name: '湖北', value: 19632.26 },
+        { name: '湖南', value: 19669.56 },
+        { name: '四川', value: 21026.68 },
+        { name: '辽宁', value: 22226.7 },
+        { name: '河北', value: 24515.76 },
+        { name: '河南', value: 26931.03 },
+        { name: '浙江', value: 32318.85 },
+        { name: '山东', value: 45361.85, selected: true },
+        { name: '江苏', value: 49110.27 },
+        { name: '广东', value: 53210.28 },
+        { name: '香港', value: 3210.28 },
+        { name: '澳门', value: 5310.28 },
+        { name: '台湾', value: 5210.28 },
+        { name: '南海诸岛', value: 1 }
+      ]
       // 其他信息
     }
   },
   created() {
-    this.fetchData()
+    // this.fetchData()
   },
   beforeDestroy() {
     clearInterval(this.timer)
   },
   mounted() {
-    const base = +new Date(2020, 1, 1)
-    const oneDay = 24 * 3600 * 1000
-    const date = []
-
-    const data = [Math.random() * 1500]
-    let now = new Date(base)
-
-    const addData = (shift) => {
-      now = [now.getFullYear(), now.getMonth() + 1, now.getDate()].join('/')
-      date.push(now)
-      data.push(this.$baseLodash.random(20000, 60000))
-
-      if (shift) {
-        date.shift()
-        data.shift()
-      }
-
-      now = new Date(+new Date(now) + oneDay)
-    }
-
-    for (let i = 1; i < 6; i++) {
-      addData()
-    }
-    addData(true)
-    this.fwl.xAxis[0].data = date
-    this.fwl.series[0].data = data
-    this.timer = setInterval(() => {
-      addData(true)
-      this.fwl.xAxis[0].data = date
-      this.fwl.series[0].data = data
-    }, 3000)
   },
   methods: {
     handleClick(e) {
